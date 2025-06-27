@@ -14,7 +14,7 @@ logger_url = os.environ.get('LOGGER_URL', 'http://logger:9000')
 def log_event(action, data):
     payload = {
         'action': action,
-        'data': data
+        'data': data,
     }
     try:
         requests.post(logger_url, json=payload)
@@ -24,14 +24,14 @@ def log_event(action, data):
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
     tasks = list(collection.find({}, {'_id': 0}))
-    log_event('GET /tasks', {'count': len(tasks)})
+    log_event('GET /tasks', {'count': len(tasks), 'timestamp': request.date})
     return jsonify(tasks)
 
 @app.route('/tasks', methods=['POST'])
 def create_task():
     data = request.json
     collection.insert_one(data)
-    log_event('POST /tasks', data)
+    log_event('POST /tasks', {'task': data, 'timestamp': request.date})
     return jsonify({'message': 'Task created'}), 201
 
 if __name__ == '__main__':
