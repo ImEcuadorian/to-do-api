@@ -1,0 +1,30 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    networks:
+      - backend_net
+      - logging_net
+    depends_on:
+      - mongodb
+      - logger
+
+  mongodb:
+    image: mongo:latest
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - backend_net
+
+  logger:
+    build: ./logging
+    networks:
+      - logging_net
+
+volumes:
+  mongo_data:
+
+networks:
+  backend_net:
+  logging_net:
